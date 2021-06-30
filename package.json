@@ -4,7 +4,7 @@
   "description": "A simple apollo-gql server for dan to test",
   "main": "index.js",
   "scripts": {
-    "test": "node src/index.js"
+    "start": "node src/index.js"
   },
   "author": "Danyl Fernandes",
   "license": "ISC",
