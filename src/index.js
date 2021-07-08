@@ -1,5 +1,8 @@
 const { ApolloServer } = require('apollo-server');
-const drinks = require('./drinks.js');
+const { PrismaClient } = require('@prisma/client')
+const Constants = require('./constants.js');
+
+const prisma = new PrismaClient();
 
 const typeDefs = `
     type Query {
@@ -7,6 +10,17 @@ const typeDefs = `
         drinkCount: Int!
         drinks: [Drink!]!
         drink(id: Int!): Drink
+    }
+
+    type Mutation {
+        drink(
+            id: ID!
+            name: String!
+            description: String!
+            prepTime: Int!
+            hasAlcohol: Boolean!
+            image: String!
+        ): Drink!
     }
 
     type Drink {
@@ -21,10 +35,35 @@ const typeDefs = `
 
 const resolvers = {
     Query: {
-        info: () => "An apollo-gql server built by dan",
-        drinks: () => drinks.getAllDrinks(),
-        drinkCount: () => drinks.getDrinkCount(),
-        drink: (parent, args) => drinks.getDrinkById(args.id)
+        info: () => "A GraphQL API running on Apollo server built by dan",
+        drinks: async () => {
+            return await prisma.drink.findMany();
+        },
+        drinkCount: async () => {
+            const rawDrinkCount = await prisma.$queryRaw('SELECT COUNT(id) AS id FROM drinks');
+            return rawDrinkCount[Constants.ARRAY_FIRST_ELEMENT].id;
+        },
+        drink: async (parent, args) => {
+            return await prisma.drink.findUnique({
+                where: {
+                    id: args.id
+                }
+            });
+        }
+    },
+    Mutation: {
+        drink: async (parent, args) => {  
+            const drink = {
+                id: args.id,
+                name: args.name,
+                description: args.description,
+                prepTime: args.prepTime,
+                hasAlcohol: args.hasAlcohol,
+                image: args.image
+            };
+            await prisma.drink.create({ data: drink });
+            return drink;
+        }
     }
 }
 

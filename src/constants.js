@@ -1,0 +1,1 @@
+exports.ARRAY_FIRST_ELEMENT = 0;

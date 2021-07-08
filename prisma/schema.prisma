@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+}
+
+model Drink {
+  @@map(name: "drinks")
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  prepTime Int @default(0)
+  hasAlcohol Boolean @default(true)
+  image String
+}
