@@ -61,7 +61,9 @@ const resolvers = {
                 hasAlcohol: args.hasAlcohol,
                 image: args.image
             };
-            await prisma.drink.create({ data: drink });
+            await prisma.drink.create({ 
+                data: drink
+            });
             return drink;
         }
     }
