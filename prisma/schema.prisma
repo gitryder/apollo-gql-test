@@ -8,12 +8,53 @@ datasource db {
   url = env("DATABASE_URL")
 }
 
-model Drink {
-  @@map(name: "drinks")
-  id String @id 
+model User {
+  @@map("user")
+  id String @id
   name String
-  description String
-  prepTime Int  
-  hasAlcohol Boolean @default(true)
-  image String
+  email String
+  profile_picture_url String
+  short_desc String
+  long_desc String
+  social_linked_in String
+  social_instagram String
+  social_twitter String
+  like Like?
+  comment Comment?
+  post Post?
+}
+
+model Post {
+  @@map("post")
+  id String @id
+  title String
+  body_text String
+  body_html String
+  user User @relation(fields: [created_by], references: [id])
+  created_by String
+  created_on String
+  like Like?
+  comment Comment?
+}
+
+model Like {
+  @@map("like")
+  @@id(fields: [user_id, post_id])
+  user User @relation(fields: [user_id], references: [id])
+  user_id String
+  post Post @relation(fields: [post_id], references: [id])
+  post_id String
+  timestamp String
+}
+
+model Comment {
+  @@map("comment")
+  @@id(fields: [user_id, post_id])
+  user User @relation(fields: [user_id], references: [id])
+  user_id String 
+  post Post @relation(fields: [post_id], references: [id])
+  post_id String
+  title String
+  body String
+  timestamp String
 }
