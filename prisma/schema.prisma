@@ -1,60 +1,58 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native"]
 }
 
 datasource db {
   provider = "mysql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
-model User {
-  @@map("user")
-  id String @id
-  name String
-  email String
-  profile_picture_url String
-  short_desc String
-  long_desc String
-  social_linked_in String
-  social_instagram String
-  social_twitter String
-  like Like?
-  comment Comment?
-  post Post?
+model comment {
+  user_id   String @db.VarChar(255)
+  post_id   String @db.VarChar(255)
+  title     String @db.VarChar(255)
+  body      String @db.VarChar(255)
+  timestamp String @db.VarChar(255)
+  post      post   @relation(fields: [post_id], references: [id])
+  user      user   @relation(fields: [user_id], references: [id])
+
+  @@id([user_id, post_id])
+  @@index([post_id], name: "comment_postid_foreign")
 }
 
-model Post {
-  @@map("post")
-  id String @id
-  title String
-  body_text String
-  body_html String
-  user User @relation(fields: [created_by], references: [id])
-  created_by String
-  created_on String
-  like Like?
-  comment Comment?
+model like {
+  user_id   String @db.VarChar(255)
+  post_id   String @db.VarChar(255)
+  timestamp String @db.VarChar(255)
+  post      post   @relation(fields: [post_id], references: [id])
+  user      user   @relation(fields: [user_id], references: [id])
+
+  @@id([user_id, post_id])
+  @@index([post_id], name: "likes_post_id_foreign")
 }
 
-model Like {
-  @@map("like")
-  @@id(fields: [user_id, post_id])
-  user User @relation(fields: [user_id], references: [id])
-  user_id String
-  post Post @relation(fields: [post_id], references: [id])
-  post_id String
-  timestamp String
+model post {
+  id         String    @id @db.VarChar(255)
+  title      String    @db.VarChar(255)
+  body_text  String?   @db.VarChar(2000)
+  body_html  String?   @db.VarChar(2000)
+  created_on String?   @db.VarChar(255)
+  created_by String?   @db.VarChar(255)
+  comments   comment[]
+  likes      like[]
 }
 
-model Comment {
-  @@map("comment")
-  @@id(fields: [user_id, post_id])
-  user User @relation(fields: [user_id], references: [id])
-  user_id String 
-  post Post @relation(fields: [post_id], references: [id])
-  post_id String
-  title String
-  body String
-  timestamp String
+model user {
+  id                  String    @id @db.VarChar(255)
+  name                String    @db.VarChar(255)
+  email               String    @db.VarChar(255)
+  profile_picture_url String    @db.VarChar(255)
+  short_desc          String    @db.VarChar(255)
+  long_desc           String    @db.VarChar(255)
+  social_linked_in    String    @db.VarChar(255)
+  social_instagram    String    @db.VarChar(255)
+  social_twitter      String    @db.VarChar(255)
+  comments            comment[]
+  likes               like[]
 }
